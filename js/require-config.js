@@ -75,12 +75,11 @@ var require = {
     "backbone-events": "shims/backbone-events",
     "template": "require.template",
     "test": "../test",
-    "templates": "../templates",
-    "localized": "/bower/webmaker-i18n/localized"
+    "templates": "../templates"
   },
   config: {
     template: {
-      htmlPath: "templates",
+      htmlPath: "templaaates",
       i18nPath: "fc/nls/ui"
     }
   }

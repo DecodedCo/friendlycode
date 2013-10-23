@@ -87,6 +87,7 @@ define(["jquery", "./gutter-pointer"], function($, gutterPointer) {
         lastToggle.lastElement = lastElement;
         codeMirror.addWidget(lastPos, lastToggle, false);
         lastToggle.onclick = function() {
+          lastToggle.lastElement.removeClass('hidden');
           lastToggle.lastElement.toggle();
           codeMirror.focus();
         };

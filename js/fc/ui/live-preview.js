@@ -7,7 +7,7 @@ define(["jquery", "backbone-events"], function($, BackboneEvents) {
     var self = {codeMirror: options.codeMirror, title: ""},
         codeMirror = options.codeMirror,
         iframe = document.createElement("iframe"),
-        previewLoader = options.previewLoader || "/templates/previewloader.html",
+        previewLoader = options.previewLoader || "friendlycode/templates/previewloader.html",
         previewArea = options.previewArea,
         telegraph;
 
