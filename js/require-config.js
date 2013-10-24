@@ -51,6 +51,9 @@ var require = {
         "codemirror/css"
       ],
       exports: "CodeMirror"
+    },
+    "jszip": {
+      exports: "JSZip"
     }
   },
   packages: ['slowparse-errors'],
@@ -70,6 +73,7 @@ var require = {
     "text": "../vendor/require.text",
     "i18n": "../vendor/require.i18n",
     "lscache": "../vendor/lscache",
+    "jszip": "../vendor/jszip",
     // Non-vendor paths
     "jquery": "shims/jquery.no-conflict",
     "backbone-events": "shims/backbone-events",

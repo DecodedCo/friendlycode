@@ -25,13 +25,15 @@ define([
       panes: panes
     });
 
+    var files;
+
     if (options.files) {
       container.addClass('files');
 
       var filesDiv = $('<div class="friendlycode-files"></div>')
         .appendTo(container);
 
-      var files = EditorFiles({
+      files = EditorFiles({
         container: filesDiv,
         files: options.files,
         panes: panes

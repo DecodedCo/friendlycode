@@ -1,7 +1,8 @@
 // TODO: proper UI. alerts and prompts make me sad.
 
 define(function(require) {
-  var $ = require("jquery-tipsy");
+  var $ = require("jquery-tipsy"),
+    JSZip = require("jszip");
 
   return function EditorFiles(options) {
     var container = options.container,
@@ -11,6 +12,9 @@ define(function(require) {
         .addClass('toolbar'),
       addFileButton = $('<li>New</li>')
         .addClass('add-file')
+        .appendTo(fileList),
+      downloadAllButton = $('<li>Download</li>')
+        .addClass('download-all glyphicon-download')
         .appendTo(fileList),
       deleteButton = $('<button></button>')
         .addClass('delete glyphicon glyphicon-remove')
@@ -65,6 +69,27 @@ define(function(require) {
       }
     }
 
+    function downloadAll() {
+      var files = get(),
+        zip = new JSZip();
+
+      for (var filename in files) {
+        if (files.hasOwnProperty(filename)) {
+          zip.file(filename, files[filename]);
+        }
+      }
+
+      var a = $('<a></a>')
+        .attr('href', 'data:application/zip;base64,' + zip.generate())
+        .attr('download', 'code.zip')
+        .appendTo(document.body)
+        .text('download');
+
+      a[0].click();
+
+      a.remove();
+    }
+
     function get() {
       return panes.getFiles();
     }
@@ -97,6 +122,11 @@ define(function(require) {
       toolBar.detach();
       var filename = fileList.find('.active').data('file-name');
       deleteFile(filename);
+    });
+
+    downloadAllButton.on('click', function(e) {
+      e.stopPropagation();
+      downloadAll();
     });
 
     files[options.files.main].trigger('click');

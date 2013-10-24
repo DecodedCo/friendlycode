@@ -1,6 +1,6 @@
 .files .friendlycode-toolbar {
   width: auto;
-  left: 80px;
+  left: 79px;
   right: 0;
 }
 
@@ -28,8 +28,8 @@
   margin: 0;
   padding: 0;
   display: block;
-  width: 80px;
-  height: 80px;
+  width: 79px;
+  height: 79px;
   border-bottom: 1px solid #ddd;
   cursor: pointer;
   text-align: center;
@@ -43,7 +43,7 @@
 }
 
 .friendlycode-files li:hover {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .friendlycode-files li:before {
@@ -57,7 +57,7 @@
 .friendlycode-files .toolbar {
   position: absolute;
   top: 75px;
-  width: 80px;
+  width: 79px;
   height: 25px;
   border-top: 1px solid #ddd;
   background: white;
@@ -67,7 +67,7 @@
 .friendlycode-files .toolbar button {
   border: none;
   background: none;
-  width: 80px;
+  width: 79px;
   height: 20px;
 }
 
@@ -101,4 +101,19 @@
   color: #4BD633;
   line-height: 55px;
   font-weight: bold;
+}
+
+.friendlycode-files .download-all {
+  position: absolute;
+  bottom: 0;
+  top: auto;
+  border-bottom: none;
+  border-top: 1px solid #ddd;
+}
+
+.friendlycode-files .download-all:before {
+  font-family: 'Glyphicons Halflings';
+  font-size: 35px;
+  line-height: 50px;
+  color: #888;
 }
