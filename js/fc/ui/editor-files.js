@@ -7,11 +7,18 @@ define(function(require) {
     var container = options.container,
       fileList = $('<ul></ul>')
         .appendTo(container),
+      toolBar = $('<div></div>')
+        .addClass('toolbar'),
       addFileButton = $('<li>New</li>')
         .addClass('add-file')
-        .appendTo(fileList);
+        .appendTo(fileList),
+      deleteButton = $('<button></button>')
+        .addClass('delete glyphicon glyphicon-remove')
+        .appendTo(toolBar);
 
     var panes = options.panes;
+
+    var files = {};
 
     var modes = {
       js: 'text/javascript',
@@ -33,16 +40,29 @@ define(function(require) {
       if (ext === 'html' || ext === 'css' || ext === 'js') {
         panes.newDocument(name, content, modes[ext]);
 
-        return $('<li></li>')
+        var el = $('<li></li>')
           .addClass('type-' + ext)
           .addClass('file')
           .text(name)
           .data('file-name', name)
           .insertBefore(addFileButton);
+
+        files[name] = el;
+
         } else {
           alert("You can only make HTML, CSS or JS files.");
           return null;
         }
+    }
+
+    function deleteFile(name) {
+      var el = files[name];
+      if (el) {
+        el.remove();
+        delete files[name];
+        panes.deleteDocument(name);
+        files[options.files.main].trigger('click');
+      }
     }
 
     function get() {
@@ -60,20 +80,30 @@ define(function(require) {
     }
 
     panes.setMain(options.files.main);
-    panes.switchDocument(options.files.main);
-
 
     addFileButton.on('click', function() {
       addFile(prompt("New file:"));
     });
 
     fileList.on('click', '.file', function() {
-      var file = $(this).data('file-name');
-      panes.switchDocument(file);
+      var $this = $(this);
+      panes.switchDocument($this.data('file-name'));
+      toolBar.appendTo($this);
+      fileList.find('.active').removeClass('active');
+      $this.addClass('active');
     });
+
+    toolBar.on('click', '.delete', function() {
+      toolBar.detach();
+      var filename = fileList.find('.active').data('file-name');
+      deleteFile(filename);
+    });
+
+    files[options.files.main].trigger('click');
 
     return {
       addFile: addFile,
+      deleteFile: deleteFile,
       get: get
     };
   };

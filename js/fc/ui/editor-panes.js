@@ -136,8 +136,11 @@ define(function(require) {
         CodeMirror.signal(codeMirror, 'change');
         codeMirror.reparse();
       }
-
     };
+
+    self.deleteDocument = function(name) {
+      delete documents[name];
+    }
 
     self.setMain = function(name) {
       documents.main = name;
@@ -153,7 +156,7 @@ define(function(require) {
       }
 
       return files;
-    }
+    };
 
     return self;
   };
