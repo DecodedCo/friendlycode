@@ -1,0 +1,80 @@
+.files .friendlycode-toolbar {
+  width: auto;
+  left: 80px;
+  right: 0;
+}
+
+.files .friendlycode-panes {
+  left: 80px;
+}
+
+.friendlycode-files {
+  position: absolute;
+  width: 80px;
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-right: 1px solid #ddd;
+}
+
+.friendlycode-files ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.friendlycode-files li {
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: 80px;
+  height: 80px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  text-align: center;
+}
+
+.friendlycode-files li:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.friendlycode-files li:before {
+  font-size: 25px;
+  display: block;
+  width: 100%;
+  height: 55px;
+  line-height: 100%;
+}
+
+.friendlycode-files .add-file {
+  color: #888;
+}
+
+.friendlycode-files .add-file:before {
+  content: "+";
+  color: #ccc;
+  font-size: 75px;
+  line-height: 55px;
+}
+
+.friendlycode-files .type-html:before {
+  content: "HTML";
+  color: #E54D26;
+  line-height: 55px;
+  font-weight: bold;
+}
+
+.friendlycode-files .type-css:before {
+  content: "CSS";
+  color: #339ED6;
+  line-height: 55px;
+  font-weight: bold;
+}
+
+.friendlycode-files .type-js:before {
+  content: "JS";
+  color: #4BD633;
+  line-height: 55px;
+  font-weight: bold;
+}

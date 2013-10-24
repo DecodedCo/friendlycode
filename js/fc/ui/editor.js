@@ -1,8 +1,9 @@
 define([
   "jquery",
   "./editor-panes",
-  "./editor-toolbar"
-], function($, EditorPanes, EditorToolbar) {
+  "./editor-toolbar",
+  "./editor-files"
+], function($, EditorPanes, EditorToolbar, EditorFiles) {
   return function Editor(options) {
     var value = options.value,
         container = options.container.empty()
@@ -16,12 +17,26 @@ define([
       container: panesDiv,
       value: value,
       allowJS: options.allowJS,
-      previewLoader: options.previewLoader
+      previewLoader: options.previewLoader,
+      files: options.files
     });
     var toolbar = EditorToolbar({
       container: toolbarDiv,
       panes: panes
     });
+
+    if (options.files) {
+      container.addClass('files');
+
+      var filesDiv = $('<div class="friendlycode-files"></div>')
+        .appendTo(container);
+
+      var files = EditorFiles({
+        container: filesDiv,
+        files: options.files,
+        panes: panes
+      });
+    }
 
     container.removeClass("friendlycode-loading");
     panes.codeMirror.refresh();
@@ -29,7 +44,8 @@ define([
     return {
       container: container,
       panes: panes,
-      toolbar: toolbar
+      toolbar: toolbar,
+      files: files
     };
   };
 });

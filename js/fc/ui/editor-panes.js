@@ -3,6 +3,7 @@ define(function(require) {
       Slowparse = require("slowparse/slowparse"),
       TreeInspectors = require("slowparse/tree-inspectors"),
       ParsingCodeMirror = require("fc/ui/parsing-codemirror"),
+      CodeMirror = require("codemirror"),
       Help = require("fc/help"),
       LivePreview = require("fc/ui/live-preview"),
       ErrorHelp = require("fc/ui/error-help"),
@@ -36,9 +37,60 @@ define(function(require) {
         "gutter-markers"
       ],
       value: initialValue,
-      parse: function(html) {
-        return Slowparse.HTML(document, html,
-                              allowJS ? [] : [TreeInspectors.forbidJS]);
+      parse: function(code) {
+        function offsetObjChars(n, obj) {
+          console.log(n, obj);
+          for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+              if (prop === 'start' || prop === 'end') {
+                obj[prop] -= n;
+              } else if (typeof obj[prop] === 'object') {
+                offsetObjChars(n, obj[prop]);
+              }
+            }
+          }
+        }
+
+        function offsetNodeChars(n, node) {
+          if (node.parseInfo) {
+            offsetObjChars(n, node.parseInfo);
+          } else {
+            for (var i = 0, l = node.childNodes.length; i < l; i++) {
+              offsetNodeChars(n, node.childNodes[i]);
+            }
+          }
+        }
+
+        function offsetChars(n, parsed) {
+          if (parsed.error) {
+            offsetObjChars(n, parsed.error);
+          }
+
+          offsetNodeChars(n, parsed.document);
+
+          return parsed;
+        }
+
+        var out = {};
+
+        switch (codeMirror.getDoc().modeOption) {
+          case 'text/html':
+            out = Slowparse.HTML(document, code,
+                                  allowJS ? [] : [TreeInspectors.forbidJS]);
+            break;
+
+          case 'text/css':
+            out = offsetChars(7, Slowparse.HTML(document, '<style>' + code + '</style>',
+                                  allowJS ? [] : [TreeInspectors.forbidJS]));
+            break;
+
+          case 'text/javascript':
+            out = offsetChars(8, Slowparse.HTML(document, '<script>' + code + '</script>',
+                                  allowJS ? [] : [TreeInspectors.forbidJS]));
+            break;
+        }
+
+        out.documents = documents;
       }
     });
     var relocator = Relocator(codeMirror);
@@ -62,6 +114,27 @@ define(function(require) {
       previewLoader: options.previewLoader
     });
     var previewToEditorMapping = PreviewToEditorMapping(preview);
+
+    var documents = self.documents = {};
+
+    self.newDocument = function(name, content, mode) {
+      var doc = CodeMirror.Doc(content, mode);
+
+      documents[name] = doc;
+    };
+
+    self.switchDocument = function(name) {
+      var doc = documents[name];
+
+      if (doc) {
+        codeMirror.swapDoc(doc);
+      }
+
+      CodeMirror.signal(codeMirror, 'change');
+      codeMirror.reparse();
+    };
+
+    self.setMain = function(name) {};
 
     return self;
   };
