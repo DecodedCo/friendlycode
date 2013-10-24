@@ -39,7 +39,6 @@ define(function(require) {
       value: initialValue,
       parse: function(code) {
         function offsetObjChars(n, obj) {
-          console.log(n, obj);
           for (var prop in obj) {
             if (obj.hasOwnProperty(prop)) {
               if (prop === 'start' || prop === 'end') {
@@ -91,6 +90,9 @@ define(function(require) {
         }
 
         out.documents = documents;
+        out.currentDocument = self.currentDocument;
+
+        return out;
       }
     });
     var relocator = Relocator(codeMirror);
@@ -128,13 +130,18 @@ define(function(require) {
 
       if (doc) {
         codeMirror.swapDoc(doc);
+
+        self.currentDocument = name;
+
+        CodeMirror.signal(codeMirror, 'change');
+        codeMirror.reparse();
       }
 
-      CodeMirror.signal(codeMirror, 'change');
-      codeMirror.reparse();
     };
 
-    self.setMain = function(name) {};
+    self.setMain = function(name) {
+      documents.main = name;
+    };
 
     return self;
   };

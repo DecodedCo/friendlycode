@@ -24,12 +24,39 @@ define(["jquery", "backbone-events"], function($, BackboneEvents) {
           telegraph = iframe.contentWindow;
         }
 
-        // Communicate content changes. For the moment,
-        // we treat all changes as a full refresh.
-        var message = JSON.stringify({
-          type: "overwrite",
-          sourceCode: event.sourceCode
-        });
+        var documents = event.documents,
+          currentDocument = event.currentDocument;
+
+        if (!documents) {
+          documents = { main: '' };
+          currentDocument = '';
+        }
+
+        var files = {};
+
+        for (var filename in documents) {
+          if (documents.hasOwnProperty(filename) && filename !== 'main') {
+            files[filename] = documents[filename].getValue();
+          }
+        }
+
+        var message;
+
+        if (currentDocument === documents.main) {
+          // Communicate content changes. For the moment,
+          // we treat all changes as a full refresh.
+          message = JSON.stringify({
+            type: "overwrite",
+            sourceCode: event.sourceCode,
+            files: files
+          });
+        } else {
+          message = JSON.stringify({
+            type: "update-file",
+            name: currentDocument,
+            sourceCode: files[currentDocument]
+          });
+        }
 
         try {
           // targetOrigin is current a blanket allow, we'll want to
@@ -53,7 +80,7 @@ define(["jquery", "backbone-events"], function($, BackboneEvents) {
 
     BackboneEvents.mixin(self);
     return self;
-  };
+  }
 
   return LivePreview;
 });

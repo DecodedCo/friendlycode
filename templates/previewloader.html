@@ -31,7 +31,7 @@
        * content management object
        */
       var content = {
-        overwrite: function overwriteIFrame(sourceCode) {
+        overwrite: function overwriteIFrame(sourceCode, files) {
           var iframe = document.createElement("iframe");
           iframe.style.opacity = 0.0;
           document.body.appendChild(iframe);
@@ -40,6 +40,28 @@
           doc = iframe.contentDocument;
           doc.open();
           doc.write(sourceCode);
+
+          // Insert CSS files
+          var styleLinks = doc.querySelectorAll('link[rel=stylesheet]');
+          for (var i = 0, l = styleLinks.length; i < l; i++) {
+            var href = styleLinks[i].getAttribute('href');
+            if (href && files[href]) {
+              styleLinks[i].outerHTML = '<style>' + files[href] + '</style>'
+            }
+          }
+
+          // Insert JS files
+          var scripts = doc.querySelectorAll('script[src]');
+          for (var i = 0, l = scripts.length; i < l; i++) {
+            var src = scripts[i].getAttribute('src');
+            if (src && files[src]) {
+              var script = doc.createElement('script');
+              script.textContent = files[src];
+              scripts[i].parentNode.insertBefore(script, scripts[i]);
+              scripts[i].outerHTML = '';
+            }
+          }
+
           doc.close();
 
           // kill off old iframe
@@ -63,21 +85,25 @@
       window.addEventListener("message", function(event) {
         try {
           data = JSON.parse(event.data);
-          // currently we only support "overwrite",
-          // but once a good DOM diff solution is avaible,
-          // we want to extend this instruction set to
-          // also allow selecting diff-based updating.
-          if(data.type && data.type === "overwrite") {
-            if ("sourceCode" in data && typeof data.sourceCode === "string") {
-              content[data.type](data.sourceCode);
-            } else {
-              console.error("preview payload had no associated, valid sourceCode", event.data);
-            }
-          } else {
-            console.error("preview payload had no associated instruction type", event.data);
-          }
         } catch (e) {
           console.error("JSON.parse failed for preview payload", event.data);
+          console.log(e);
+        }
+
+        // currently we only support "overwrite",
+        // but once a good DOM diff solution is avaible,
+        // we want to extend this instruction set to
+        // also allow selecting diff-based updating.
+        if(data.type && data.type === "overwrite") {
+          if ("sourceCode" in data && typeof data.sourceCode === "string") {
+            content.overwrite(data.sourceCode, data.files);
+          } else {
+            console.error("preview payload had no associated, valid sourceCode", event.data);
+          }
+        } else if (data.type && data.type === 'update-file') {
+
+        } else {
+          console.error("preview payload had no associated instruction type", event.data);
         }
       });
     </script>

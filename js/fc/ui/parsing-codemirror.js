@@ -12,11 +12,8 @@ define([
     function reparse() {
       var sourceCode = codeMirror.getValue();
       var result = givenOptions.parse(sourceCode);
-      CodeMirror.signal(codeMirror, "reparse", {
-        error: result.error,
-        sourceCode: sourceCode,
-        document: result.document
-      });
+      result.sourceCode = sourceCode;
+      CodeMirror.signal(codeMirror, "reparse", result);
       // Cursor activity would've been fired before us, so call it again
       // to make sure it displays the right context-sensitive help based
       // on the new state of the document.
