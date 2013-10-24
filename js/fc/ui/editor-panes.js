@@ -143,6 +143,18 @@ define(function(require) {
       documents.main = name;
     };
 
+    self.getFiles = function() {
+      var files = {};
+
+      for (var filename in documents) {
+        if (documents.hasOwnProperty(filename) && filename !== 'main') {
+          files[filename] = documents[filename].getValue();
+        }
+      }
+
+      return files;
+    }
+
     return self;
   };
 });

@@ -45,6 +45,10 @@ define(function(require) {
         }
     }
 
+    function get() {
+      return panes.getFiles();
+    }
+
     var filename, content;
     if (typeof options.files === 'object') {
       for (filename in options.files) {
@@ -67,5 +71,10 @@ define(function(require) {
       var file = $(this).data('file-name');
       panes.switchDocument(file);
     });
+
+    return {
+      addFile: addFile,
+      get: get
+    };
   };
 });
