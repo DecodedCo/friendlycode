@@ -30,6 +30,18 @@
       /**
        * content management object
        */
+
+      var fileEls = {}
+
+      function replaceElement(oldEl, type, textContent) {
+        var newEl = content.doc.createElement(type);
+        newEl.textContent = textContent;
+        console.log(oldEl);
+        oldEl.parentNode.insertBefore(newEl, oldEl);
+        oldEl.outerHTML = '';
+        return newEl;
+      }
+
       var content = {
         overwrite: function overwriteIFrame(sourceCode, files) {
           var iframe = document.createElement("iframe");
@@ -37,7 +49,7 @@
           document.body.appendChild(iframe);
 
           // set new content
-          doc = iframe.contentDocument;
+          doc = content.doc = iframe.contentDocument;
           doc.open();
           doc.write(sourceCode);
 
@@ -46,7 +58,7 @@
           for (var i = 0, l = styleLinks.length; i < l; i++) {
             var href = styleLinks[i].getAttribute('href');
             if (href && files[href]) {
-              styleLinks[i].outerHTML = '<style>' + files[href] + '</style>'
+              fileEls[href] = replaceElement(styleLinks[i], 'style', files[href]);
             }
           }
 
@@ -55,10 +67,7 @@
           for (var i = 0, l = scripts.length; i < l; i++) {
             var src = scripts[i].getAttribute('src');
             if (src && files[src]) {
-              var script = doc.createElement('script');
-              script.textContent = files[src];
-              scripts[i].parentNode.insertBefore(script, scripts[i]);
-              scripts[i].outerHTML = '';
+              fileEls[src] = replaceElement(styleLinks[i], 'script', files[src]);
             }
           }
 
@@ -73,6 +82,15 @@
           var baseTag = doc.createElement('base');
           baseTag.setAttribute('target', '_blank');
           doc.querySelector("head").appendChild(baseTag);
+        },
+
+        updateFile: function(sourceCode, file) {
+          if (fileEls[file]) {
+            var tagName = fileEls[file].tagName.toLowerCase();
+            return fileEls[file] = replaceElement(fileEls[file], tagName, sourceCode)
+          } else {
+            return false;
+          }
         }
       }
 
@@ -101,7 +119,13 @@
             console.error("preview payload had no associated, valid sourceCode", event.data);
           }
         } else if (data.type && data.type === 'update-file') {
-
+          if ("sourceCode" in data && typeof data.sourceCode === "string" && 'fileName' in data && typeof data.fileName === 'string') {
+            if (content.updateFile(data.sourceCode, data.fileName) === false) {
+              // content.overwrite(data.sourceCode, data.files);
+            }
+          } else {
+            console.error("preview payload had no associated, valid fileName or sourceCode", event.data);
+          }
         } else {
           console.error("preview payload had no associated instruction type", event.data);
         }

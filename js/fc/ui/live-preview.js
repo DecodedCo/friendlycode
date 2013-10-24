@@ -53,7 +53,7 @@ define(["jquery", "backbone-events"], function($, BackboneEvents) {
         } else {
           message = JSON.stringify({
             type: "update-file",
-            name: currentDocument,
+            fileName: currentDocument,
             sourceCode: files[currentDocument]
           });
         }
