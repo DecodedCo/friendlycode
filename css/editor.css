@@ -104,6 +104,9 @@
   top: 0;
   left: 0;
   width: 50%;
+  width: -moz-calc(50% + 41px);
+  width: -webkit-calc(50% + 41px);
+  width: calc(50% + 41px);
   height: 100%;
   border-right: 1px solid #D6D6D6;
   z-index: 2;
@@ -114,6 +117,9 @@
   position: absolute;
   top: 0;
   left: 50%;
+  left: -moz-calc(50% + 41px);
+  left: -webkit-calc(50% + 41px);
+  left: calc(50% + 41px);  
   width: 50%;
   height: 100%;
   z-index: 1;

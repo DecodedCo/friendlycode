@@ -4,7 +4,7 @@
 
 .files .friendlycode-toolbar {
   width: auto;
-  left: 79px;
+  left: 0px;
   right: 0;
 }
 
@@ -16,7 +16,7 @@
   position: absolute;
   width: 80px;
   height: 100%;
-  top: 0;
+  top: 41px; /* Same height as .editor-pane-nav-options */
   bottom: 0;
   left: 0;
   border-right: 1px solid #ddd;
@@ -109,7 +109,7 @@
 
 .friendlycode-files .download-all {
   position: absolute;
-  bottom: 0;
+  bottom: 41px;
   top: auto;
   border-bottom: none;
   border-top: 1px solid #ddd;
