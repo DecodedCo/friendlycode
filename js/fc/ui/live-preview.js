@@ -42,12 +42,12 @@ define(["jquery", "backbone-events"], function($, BackboneEvents) {
 
         var message;
 
-        if (currentDocument === documents.main) {
+        if (true || currentDocument === documents.main) {
           // Communicate content changes. For the moment,
           // we treat all changes as a full refresh.
           message = JSON.stringify({
             type: "overwrite",
-            sourceCode: event.sourceCode,
+            sourceCode: files[documents.main],
             files: files
           });
         } else {

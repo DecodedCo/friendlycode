@@ -33,45 +33,73 @@
 
       var fileEls = {}
 
-      function replaceElement(oldEl, type, textContent) {
-        var newEl = content.doc.createElement(type);
+      function replaceElement(oldEl, type, textContent, doc) {
+        var newEl = (doc || content.doc || document).createElement(type);
         newEl.textContent = textContent;
-        console.log(oldEl);
-        oldEl.parentNode.insertBefore(newEl, oldEl);
-        oldEl.outerHTML = '';
-        return newEl;
+        if (oldEl.parentNode) {
+          oldEl.parentNode.insertBefore(newEl, oldEl);
+          oldEl.outerHTML = '';
+          return newEl;
+        }
       }
 
       var content = {
         overwrite: function overwriteIFrame(sourceCode, files) {
-          var iframe = document.createElement("iframe");
-          iframe.style.opacity = 0.0;
-          document.body.appendChild(iframe);
+          fileEls = {};
 
-          // set new content
-          doc = content.doc = iframe.contentDocument;
-          doc.open();
-          doc.write(sourceCode);
+          // Create a new document for preprocessing:
+          var doc = document.implementation.createHTMLDocument(),
+            docEl = doc.documentElement,
+            firstEl;
+
+          docEl.innerHTML = sourceCode;
+          firstEl = docEl.firstElementChild;
+
+          // Is this an entire document or a fragment?
+          if (docEl.childElementCount === 1 && firstEl.tagName.toLowerCase() === 'html') {
+            doc.replaceChild(firstEl, docEl);
+          }
+
+          console.log(doc);
 
           // Insert CSS files
           var styleLinks = doc.querySelectorAll('link[rel=stylesheet]');
           for (var i = 0, l = styleLinks.length; i < l; i++) {
             var href = styleLinks[i].getAttribute('href');
             if (href && files[href]) {
-              fileEls[href] = replaceElement(styleLinks[i], 'style', files[href]);
+              fileEls[href] = replaceElement(styleLinks[i], 'style', files[href], doc);
             }
           }
 
           // Insert JS files
-          var scripts = doc.querySelectorAll('script[src]');
+          var scripts = doc.getElementsByTagName('script');
+          console.log(scripts);
           for (var i = 0, l = scripts.length; i < l; i++) {
             var src = scripts[i].getAttribute('src');
+            console.log(src, src in files)
             if (src && files[src]) {
-              fileEls[src] = replaceElement(styleLinks[i], 'script', files[src]);
+              fileEls[src] = replaceElement(scripts[i], 'script', files[src], doc);
             }
           }
 
-          doc.close();
+          // New iframe
+          var iframe = document.createElement("iframe");
+          iframe.style.opacity = 0.0;
+          document.body.appendChild(iframe);
+
+          // Replace iframe document with processed document
+          var iframeDoc = iframe.contentDocument;
+          // iframeDoc.replaceChild(iframeDoc.adoptNode(docEl), iframeDoc.documentElement);
+
+          // console.log(iframeDoc);
+
+          // iframe.contentDocument = iframeDoc;
+
+          iframeDoc.open();
+          iframeDoc.write('<!DOCTYPE html>' + docEl.outerHTML);
+          iframeDoc.close();
+
+          doc = content.doc = iframeDoc;
 
           // kill off old iframe
           document.body.removeChild(document.querySelector("iframe"));

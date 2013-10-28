@@ -113,9 +113,9 @@ define(function(require) {
     fileList.on('click', '.file', function() {
       var $this = $(this);
       panes.switchDocument($this.data('file-name'));
-      toolBar.appendTo($this);
-      fileList.find('.active').removeClass('active');
-      $this.addClass('active');
+      // toolBar.appendTo($this);
+      // fileList.find('.active').removeClass('active');
+      // $this.addClass('active');
     });
 
     toolBar.on('click', '.delete', function() {
